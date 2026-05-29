@@ -9,8 +9,6 @@ jobs:
     uses: ./.github/workflows/reusable-build.yml
     with:
       node_version: '20'
-    secrets:
-      NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN}}
 
   deploy:
     runs-on: ubuntu-latest
