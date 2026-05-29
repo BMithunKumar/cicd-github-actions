@@ -1,0 +1,36 @@
+name: Matrix Build
+
+
+on:
+  push: 
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        node_version: [16, 18, 20]
+        os: [ubuntu_latest, windows_latest]
+        
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node_version: ${{ matrix.node_version }}
+    
+      - name: Install & test
+        run: |
+          cd frontend
+          npm install
+          npm test
+    
+      - name: Show matrix info
+        run: echo "Running on Node ${{ matrix.node_version }} / ${{ matrix.os }}"
+
+
+        

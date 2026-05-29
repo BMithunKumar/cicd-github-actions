@@ -3,12 +3,9 @@ name: Reusable Build
 on:
   workflow_call:
     inputs:
-      node_version:
+      node-version:
         required: true
         type: string
-    secrets: 
-      NPM_TOKEN: 
-        required: false
     outputs:
       build-status:
         description: "Whether build passed"
@@ -17,6 +14,11 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: frontend
+
     outputs:
       build-status: ${{ steps.build-step.outputs.status }}
 
@@ -26,30 +28,26 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ inputs.node_version }}
+          node-version: ${{ inputs.node-version }}
 
-      - name: Install & Test
-        run: |
-          cd frontend
-          npm install
-        env: 
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+      - name: Install dependencies
+        run: npm install
 
-      - name: Run test
-        run:  |
-          cd frontend
-          npm test
-        
+      - name: Run tests
+        run: npm test
+
       - name: Build app
         id: build-step
         run: |
-          cd frontend
           npm run build
           echo "status=success" >> $GITHUB_OUTPUT
-          echo "✅ Build complete — build/ folder ready"
 
-      - name: Upload dist as artifact        # 👈 saves dist/ for deploy job
+      - name: List build output          # 👈 shows what folder was created
+        run: ls -la
+        working-directory: frontend/build   # check if build/ exists
+
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: build-artifact
-          path: frontend/build/
+          path: frontend/build/          # ✅ must exist after npm run build
