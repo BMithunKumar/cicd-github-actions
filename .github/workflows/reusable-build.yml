@@ -8,7 +8,7 @@ on:
         type: string
     secrets: 
       NPM_TOKEN: 
-        required: true
+        required: false
     outputs:
       build-status:
         description: "Whether build passed"
@@ -36,7 +36,9 @@ jobs:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
 
       - name: Run test
-        run:  npm test
+        run:  |
+          cd frontend
+          npm test
         
       - name: Build app
         id: build-step
