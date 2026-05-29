@@ -1,0 +1,15 @@
+name: Echo workflow
+
+on:
+  push: 
+    branches: master 
+
+jobs:
+  echo:
+    runs-on: ubuntu-latest
+
+
+    steps:
+      - name : Echo statement
+        run: echo "hi user"
+
