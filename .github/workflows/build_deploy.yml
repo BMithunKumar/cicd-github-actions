@@ -1,0 +1,47 @@
+name: Build & Deploy
+
+on: 
+  push:
+    branches: master
+
+
+jobs:
+  build: 
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: set up node
+        uses: actions/setup-node@v3
+        with:
+          node_version: 20
+
+      - name: install dependecies
+        run: |
+          cd frontend
+          npm install
+
+      - name: create the build 
+        run: |
+          cd frontend
+          npm run build
+    
+      - name: upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+            name: frontend-build
+            path: frontend/build/
+    
+  deploy: 
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+        - name: Download artifact
+          uses: actions/download-artifact@v4
+          with:
+            name: frontend-build
+            path: ./build
+
+        - name: Completing the process
+          run: echo "Building Successful"
