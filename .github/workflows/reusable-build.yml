@@ -42,12 +42,8 @@ jobs:
           npm run build
           echo "status=success" >> $GITHUB_OUTPUT
 
-      - name: List build output          # 👈 shows what folder was created
-        run: ls -la
-        working-directory: frontend/build   # check if build/ exists
-
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: build-artifact
-          path: frontend/build/          # ✅ must exist after npm run build
+          path: frontend/build/          
