@@ -1,0 +1,53 @@
+name: Reusable Build
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        required: true
+        type: string
+    secrets: 
+      NPM_TOKEN: 
+        required: true
+    outputs:
+      build-status:
+        description: "Whether build passed"
+        value: ${{ jobs.build.outputs.build-status }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      build-status: ${{ steps.build-step.outputs.status }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+
+      - name: Install & Test
+        run: |
+          cd frontend
+          npm install
+        env: 
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+
+      - name: Run test
+        run:  npm test
+        
+      - name: Build app
+        id: build-step
+        run: |
+          cd frontend
+          npm run build
+          echo "status=success" >> $GITHUB_OUTPUT
+          echo "✅ Build complete — build/ folder ready"
+
+      - name: Upload dist as artifact        # 👈 saves dist/ for deploy job
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifact
+          path: frontend/build/

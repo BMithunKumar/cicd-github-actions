@@ -1,0 +1,29 @@
+name: Main CICD
+
+on:
+  push:
+    branches: [master]
+
+jobs: 
+  build:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      node_version: '20'
+    secrets:
+      NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN}}
+
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifact
+          path: dist/
+
+      - name: Deploy
+        run: |
+          echo "🚀 Deploying..."
+          echo "✅ Deploy done"
+        env:
+          API_KEY: ${{ secrets.API_KEY }}  
