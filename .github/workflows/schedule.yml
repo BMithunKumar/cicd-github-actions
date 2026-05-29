@@ -1,8 +1,6 @@
 name: Manual Trigger and Scheduling
 
 on: 
-  push:
-    branches: [master]
   workflow_dispatch:
     inputs:
       environment:
@@ -16,6 +14,7 @@ on:
 
   schedule:
     - cron: '0 0 * * *' 
+
 
 jobs: 
   cron:
