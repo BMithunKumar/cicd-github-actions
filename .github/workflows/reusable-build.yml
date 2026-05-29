@@ -3,7 +3,7 @@ name: Reusable Build
 on:
   workflow_call:
     inputs:
-      node-version:
+      node_version:
         required: true
         type: string
     secrets: 
@@ -26,7 +26,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ inputs.node-version }}
+          node-version: ${{ inputs.node_version }}
 
       - name: Install & Test
         run: |
