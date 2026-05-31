@@ -1,0 +1,36 @@
+name: Trivy Image Scan
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  build-and-scan:
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker image from frontend
+        run: |
+          docker build \
+            -t my-frontend-app:${{ github.sha }} \
+            ./frontend                              
+
+      - name: Trivy scan the Docker image
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'image'                        
+          image-ref: 'my-frontend-app:${{ github.sha }}'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Upload SARIF to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
